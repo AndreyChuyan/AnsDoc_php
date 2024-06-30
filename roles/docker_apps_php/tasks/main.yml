@@ -1,0 +1,44 @@
+---
+- name: Copy files and directories from role to remote server
+  copy:
+    src: "apps_web"
+    dest: ~/docker-compose/
+    force: no
+
+- name: deploy Docker Compose stack
+  community.docker.docker_compose_v2:
+    project_src: ~/docker-compose/apps_web
+    files:
+    - docker-compose.yml
+
+- name: Get infos mysql
+  community.docker.docker_container_info:
+    name: mysql
+  register: result_mysql
+
+- name: Get infos nginx
+  community.docker.docker_container_info:
+    name: nginx
+  register: result_nginx
+
+- name: Get infos php
+  community.docker.docker_container_info:
+    name: php
+  register: result_php
+
+- name: Does container msql exist?
+  ansible.builtin.debug:
+    msg: "msql - {{ 'exists' if result_mysql.exists else 'does not exist' }}"
+
+- name: Does container nginx exist?
+  ansible.builtin.debug:
+    msg:  "nginx - {{ 'exists' if result_nginx.exists else 'does not exist' }}"
+
+- name: Does container php exist?
+  ansible.builtin.debug:
+    msg:  "php - {{ 'exists' if result_php.exists else 'does not exist' }}"
+    
+- name: Print information about container php
+  ansible.builtin.debug:
+    var: result_php.container
+  when: result_php.exists

@@ -1,0 +1,5 @@
+- name: Подготовка удаленнной машины и запуск docker-приложения
+  hosts: lup
+  roles:
+    - install_docker
+    - docker_apps_php
